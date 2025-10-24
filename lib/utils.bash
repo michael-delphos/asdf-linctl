@@ -2,8 +2,7 @@
 
 set -euo pipefail
 
-# TODO: Ensure this is the correct GitHub homepage where releases can be downloaded for linctl.
-GH_REPO="https://github.com/michael-delphos/linctl"
+GH_REPO="https://github.com/dorkitude/linctl"
 TOOL_NAME="linctl"
 TOOL_TEST="linctl --version"
 
@@ -31,8 +30,6 @@ list_github_tags() {
 }
 
 list_all_versions() {
-	# TODO: Adapt this. By default we simply list the tag names from GitHub releases.
-	# Change this function if linctl has other means of determining installable versions.
 	list_github_tags
 }
 
@@ -41,8 +38,7 @@ download_release() {
 	version="$1"
 	filename="$2"
 
-	# TODO: Adapt the release URL convention for linctl
-	url="$GH_REPO/archive/v${version}.tar.gz"
+	url="$GH_REPO/archive/refs/tags/v${version}.tar.gz"
 
 	echo "* Downloading $TOOL_NAME release $version..."
 	curl "${curl_opts[@]}" -o "$filename" -C - "$url" || fail "Could not download $url"
@@ -57,14 +53,28 @@ install_version() {
 		fail "asdf-$TOOL_NAME supports release installs only"
 	fi
 
+	# Check if Go is installed
+	if ! command -v go &>/dev/null; then
+		fail "Go is required to build $TOOL_NAME. Please install Go first."
+	fi
+
 	(
 		mkdir -p "$install_path"
-		cp -r "$ASDF_DOWNLOAD_PATH"/* "$install_path"
 
-		# TODO: Assert linctl executable exists.
-		local tool_cmd
-		tool_cmd="$(echo "$TOOL_TEST" | cut -d' ' -f1)"
-		test -x "$install_path/$tool_cmd" || fail "Expected $install_path/$tool_cmd to be executable."
+		# Build linctl from source
+		echo "* Building $TOOL_NAME $version from source..."
+		cd "$ASDF_DOWNLOAD_PATH"
+
+		# Build with version information injected via ldflags (matching Homebrew formula)
+		go build -ldflags="-s -w -X github.com/dorkitude/linctl/cmd.version=${version}" \
+			|| fail "Failed to build $TOOL_NAME"
+
+		# Move the built binary to the install path
+		mv "$TOOL_NAME" "$install_path/$TOOL_NAME" || fail "Failed to move binary to $install_path"
+		chmod +x "$install_path/$TOOL_NAME"
+
+		# Verify the binary is executable
+		test -x "$install_path/$TOOL_NAME" || fail "Expected $install_path/$TOOL_NAME to be executable."
 
 		echo "$TOOL_NAME $version installation was successful!"
 	) || (

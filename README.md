@@ -2,7 +2,7 @@
 
 # asdf-linctl [![Build](https://github.com/michael-delphos/asdf-linctl/actions/workflows/build.yml/badge.svg)](https://github.com/michael-delphos/asdf-linctl/actions/workflows/build.yml) [![Lint](https://github.com/michael-delphos/asdf-linctl/actions/workflows/lint.yml/badge.svg)](https://github.com/michael-delphos/asdf-linctl/actions/workflows/lint.yml)
 
-[linctl](https://github.com/michael-delphos/linctl) plugin for the [asdf version manager](https://asdf-vm.com).
+[linctl](https://github.com/dorkitude/linctl) plugin for the [asdf version manager](https://asdf-vm.com).
 
 </div>
 
@@ -15,10 +15,8 @@
 
 # Dependencies
 
-**TODO: adapt this section**
-
 - `bash`, `curl`, `tar`, and [POSIX utilities](https://pubs.opengroup.org/onlinepubs/9699919799/idx/utilities.html).
-- `SOME_ENV_VAR`: set this environment variable in your shell config to load the correct version of tool x.
+- **[Go](https://golang.org/)** - Required to build linctl from source. Install via your package manager or asdf (`asdf plugin add golang && asdf install golang latest`).
 
 # Install
 
