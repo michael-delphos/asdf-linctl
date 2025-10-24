@@ -4,6 +4,7 @@ set -euo pipefail
 
 GH_REPO="https://github.com/dorkitude/linctl"
 TOOL_NAME="linctl"
+# shellcheck disable=SC2034
 TOOL_TEST="linctl --version"
 
 fail() {
@@ -66,8 +67,8 @@ install_version() {
 		cd "$ASDF_DOWNLOAD_PATH"
 
 		# Build with version information injected via ldflags (matching Homebrew formula)
-		go build -ldflags="-s -w -X github.com/dorkitude/linctl/cmd.version=${version}" \
-			|| fail "Failed to build $TOOL_NAME"
+		go build -ldflags="-s -w -X github.com/dorkitude/linctl/cmd.version=${version}" ||
+			fail "Failed to build $TOOL_NAME"
 
 		# Move the built binary to the install path
 		mv "$TOOL_NAME" "$install_path/$TOOL_NAME" || fail "Failed to move binary to $install_path"
