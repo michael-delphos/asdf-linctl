@@ -39,6 +39,15 @@ download_release() {
 	version="$1"
 	filename="$2"
 
+	# Find the latest version if "latest" is specified
+	if [ "$version" = "latest" ]; then
+		version=$(list_all_versions | sort_versions | tail -n1)
+		if [ -z "$version" ]; then
+			fail "No releases found for $TOOL_NAME."
+		fi
+		echo "Using latest version: $version"
+	fi
+
 	url="$GH_REPO/archive/refs/tags/v${version}.tar.gz"
 
 	echo "* Downloading $TOOL_NAME release $version..."
